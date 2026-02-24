@@ -23,7 +23,7 @@ void deleteContact(AddressBook *addressBook);
 void listContacts(AddressBook *addressBook);
 void initialize(AddressBook *addressBook);
 void saveContactsToFile(AddressBook *AddressBook);
-void bubble_sort(AddressBook *addressBook, int (*cmp)(Contact *, Contact *));
+void bubble_sort(AddressBook *addressBook, int (*cmp)(Contact *, Contact *));//function pointer 
 int contactbyname(Contact *, Contact *);
 int contactbyphone(Contact *, Contact *);
 int contactbyemail(Contact *, Contact *);
