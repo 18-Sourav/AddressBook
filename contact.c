@@ -5,33 +5,35 @@
 #include "file.h"
 #include "populate.h"
 
-//char indexarr[50];
-void displayall(AddressBook *addressBook) // to display the multiple contact
+void displayall(AddressBook *addressBook) // List all the contacts
 {
-    printf("------ -------------- ---------------- -----------------\n");
-    printf("Index\tName\t        Phone Number    Email-id\t\t\n");
-    
-    for(int i=0;i<addressBook->contactCount;i++)
-    {
-        printf("%d_\t_",i+1);
-        printf("%s_\t_",addressBook->contacts[i].name);
-        printf("%s_\t_",addressBook->contacts[i].phone);
-        printf("%s_\t_\n",addressBook->contacts[i].email);
-        
-    }
-    printf("------ -------------- ---------------- -----------------\n");
-}
-void displaycontact(Contact *contact,int i) // to display single contact
-{
-    
-     
-        printf("%d\t",i+1);
-        printf("%s\t",contact->name);
-        printf("%s\t",contact->phone);
-        printf("%s\t\n",contact->email);
+    printf("-----------------------------------------------------------------------------\n");
+    printf("%-5s %-20s %-15s %-25s\n", 
+           "Index", "Name", "Phone Number", "Email-id");
+    printf("-----------------------------------------------------------------------------\n");
 
+    for(int i = 0; i < addressBook->contactCount; i++)
+    {
+        printf("%-5d %-20s %-15s %-25s\n",
+               i + 1,
+               addressBook->contacts[i].name,
+               addressBook->contacts[i].phone,
+               addressBook->contacts[i].email);
+    }
+
+    printf("-----------------------------------------------------------------------------\n");
 }
-// writing three different types of comparator function based on the type of data that needs to be compared
+void displaycontact(Contact *contact, int i)
+{
+    printf("| %-5d | %-20s | %-15s | %-25s |\n",
+           i + 1,
+           contact->name,
+           contact->phone,
+           contact->email);
+}
+
+/* writing three different types of comparator function based on the type of data that needs to be compared
+ so that only one type of sorting fuctions works for all the type of sorting fields */
 
 int contactbyname(Contact * a,Contact * b)// this is the comparator which is called when we are sorting by name.
 {                                         // It takes two contact pointers and compares the names and return the value.
@@ -56,8 +58,9 @@ void listContacts(AddressBook *addressBook)
     printf("1. Name\n");
     printf("2. Phone Number\n");
     printf("3. Email.id\n");
-    scanf("%d",&option);
+    scanf("%d",&option); // Taking the input of sorting criteria
 
+    // Now we are calling the sorting fuction with a comparator fuction based on the typr of the sorting criteria
     switch (option)
     {
         case 1: bubble_sort(addressBook, contactbyname);
@@ -90,142 +93,323 @@ void bubble_sort(AddressBook *addressBook, int (*cmp)(Contact *,Contact *))// in
 
 void initialize(AddressBook *addressBook) {
     addressBook->contactCount = 0;
-    populateAddressBook(addressBook);
+   // populateAddressBook(addressBook);
     
     // Load contacts from file during initialization (After files)
-    //loadContactsFromFile(addressBook);
+    loadContactsFromFile(addressBook);
 }
 
 void saveAndExit(AddressBook *addressBook) {
-   // saveContactsToFile(addressBook); // Save contacts to file
-   // exit(EXIT_SUCCESS); // Exit the program
+    saveContactsToFile(addressBook); // Save contacts to file
+    exit(EXIT_SUCCESS); // Exit the program
 }
+int numbervalid(AddressBook *addressBook, char *phone) // Function to validate the entered phone number 
+{
+    // Checking the phone number is digits and having length 10
+    int count=0, flag=0;
+    for(int k=0;phone[k];k++)
+    {
+        if(phone[k]>='0' && phone[k] <='9')
+            count++;
+        else{    
+            flag=1;
+            break;
+        }
 
+    }
+    // Checking for duplicate number
+    for(int i=0;i<addressBook->contactCount;i++)
+    {
+        if (strcmp(addressBook->contacts[i].phone, phone) == 0){// Checking if entered number already exists in addressbook or not
+            flag=1;
+            break;
+        }
+
+    }
+    if(count!=10 || flag==1) 
+        return 0; // Entered number is notcorrect 
+    else
+        return 1; // Entered number is correct
+}
+int emailvalid(AddressBook *addressBook, char *email)
+{
+    int at_index = -1;
+    int dot_index = -1;
+    int at_count = 0;
+    int dot_count = 0;
+
+    for(int i = 0; email[i]; i++)
+    {
+        if(email[i] == '@')
+        {
+            at_index = i; // storing the count of '@'
+            at_count++;  // counting the count of the '@'
+        }
+        else if(email[i] == '.')
+        {
+            dot_index = i; // storing the index of '.'
+            dot_count++;  // counting the occurence if '.'
+        }
+    }
+
+    // Structure validation first
+
+    if(at_count != 1) // more than one '@' is present
+        return 0;
+
+    if(dot_count != 1) // more than one "." is present
+        return 0;
+
+    if(at_index > dot_index) // "@" is coming after "."
+        return 0;
+
+    if(at_index == 0) // email starts with "@"
+        return 0;
+
+    if(dot_index - at_index <= 1) // No character in btwn "@" and "."
+        return 0;
+
+    if(email[dot_index + 1] == '\0') // No character after "."
+        return 0;
+
+    // Duplicate check after structure is valid
+    for(int i = 0; i < addressBook->contactCount; i++)
+    {
+        if(strcmp(addressBook->contacts[i].email, email) == 0)
+            return 0;
+    }
+
+    return 1; // Valid Email 
+}
 
 void createContact(AddressBook *addressBook)
 {
 	/* Define the logic to create a Contacts */
+
     char names[50],phonee[20],emaill[50];
-    getchar();
+    getchar(); 
     printf("Enter the contact name\n");
     scanf("%49[^\n]",names);
     strcpy(addressBook->contacts[addressBook->contactCount].name,names);
     getchar();
     
-
-    printf("Enter the contact phone number\n");
-    scanf("%19[^\n]",phonee);
-    strcpy(addressBook->contacts[addressBook->contactCount].phone,phonee);
-    getchar();
-    // do the number validation
+    while(1)
+    {
+        printf("Enter the contact phone number\n");
+        
+        scanf("%19[^\n]",phonee);
+        getchar();
+        // number validation funtion
+        int valid= numbervalid(addressBook,phonee);
+        if(valid)
+        {
+            printf("Entered number is correct\n");
+            break;
+        }
+        printf("Please enter the correct number\n");
+    }    
     
+    strcpy(addressBook->contacts[addressBook->contactCount].phone,phonee); // Copying the phone number to the database
     
-    printf("Enter the contact's email-id\n");
-    scanf("%49[^\n]",addressBook->contacts[addressBook->contactCount].email);
-    //do the email validation
 
-    addressBook->contactCount++; 
+    while(1)
+    {
+        printf("Enter the contact's email-id\n");
+        
+        scanf("%49[^\n]",emaill); // Taking the emmail input from the user
+        getchar();
 
+        //email validation
+        int valid = emailvalid(addressBook,emaill);
+            if(valid)
+            {
+                printf("Entered Email is correct \n");
+                break;
+            }
+        printf("Entered email id is incorrect\n");    
+        printf("Re-enter your email-id ");
+    }        
+
+
+    strcpy(addressBook->contacts[addressBook->contactCount].email,emaill); // Copying the email to the database
+
+    addressBook->contactCount++;// updating the total count of the contacts
+
+    // Displaying the created contact with all the details and current index
     displaycontact(&addressBook->contacts[addressBook->contactCount-1],addressBook->contactCount-1);
     
 }
-char *searchContact(AddressBook *addressBook) 
+int searchContact(AddressBook *addressBook , int *index) 
 {
     /* Define the logic for search */
-    int flag=0,count=0,newcount=0;
+    
+    int flag=0,num;
     char element[50];
-    getchar();
-    printf("Enter the contact details you want to search\n");
-    scanf("%49[^\n]",element);
-    int i=0;
-    static char indexarr[50]={0};
-    for(i;i<addressBook->contactCount;i++)
+    getchar();// clearing the input buffer
+
+    while(1)
+    {
+        printf("Enter the field you want to search\n 1.Name\n 2.Phone Number\n 3.Email\n");
+        scanf("%d",&num);
+        getchar();   // clear newline from the input buffer
+
+        if(num > 0 && num <= 3) // Entered the correct input
+            break;
+
+        printf("Enter the correct choice\n");
+    }
+    switch(num)
+    {
+        case 1: printf("Enter the Contact name you want to search\n"); // Searching wrt name
+                scanf("%49[^\n]",element);
+                break;
+        case 2: printf("Enter the Phone number you want to search\n"); // Searching wrt phone number
+                scanf("%49[^\n]",element);
+                break; 
+        case 3: printf("Enter the Contact Email you want to search\n"); // Searching wrt email
+                scanf("%49[^\n]",element);
+                break;                       
+    }
+  
+    
+    for( int i=0;i<addressBook->contactCount;i++) // Running the loop in the entire addressbook
     {
 
         if(element[0]>='0'&& element[0]<='9') // searching based on phone number
         {
-            if(strstr(addressBook->contacts[i].phone,element))
+            if(strstr(addressBook->contacts[i].phone,element)) // comparing the searched phone number with the database phone number
             {
-              //printf("%d ",i);
-              if(flag==0)
-              {
-                printf("------------- -------------  -----------\n");
-                printf("Index\tName\t        Phone Number    Email-id\t\t\n");
-              } 
-              displaycontact(&addressBook->contacts[i],i); //print along with the index
-              flag=1; // atleast one contact is found
-              count++;
-            
+                
+                if(flag==0)// So that only first itme this is printed that to when atleast one contact is matched
+                {
+                    printf("------------- -------------  -----------\n");
+                    printf("Index\tName\t        Phone Number    Email-id\t\t\n");
+                } 
+                flag=1; // atleast one contact is found
+                index[i] = 1; // making the same index as 1 in the array
+
+                displaycontact(&addressBook->contacts[i],i); //print along with the index
+               
+               
+                
             }
         }
         else if(strstr(addressBook->contacts[i].name,element) || strstr(addressBook->contacts[i].email,element))
         {
-           // printf("%d ",i);
-           if(flag==0)
-              {
-                printf("------------- -------------  -----------\n");
-                printf("Index\tName\t        Phone Number    Email-id\t\t\n");
-              } 
-            displaycontact(&addressBook->contacts[i],i); // print along with the index
-            flag=1; // atleast one contact is found
-            count++; // for multiple contacts we need to increase the indexing of the array
-            
+           
+                if(flag==0)// So that only first itme this is printed that to when atleast one contact is matched
+                {
+                    printf("------------- -------------  -----------\n");
+                    printf("Index\tName\t        Phone Number    Email-id\t\t\n");
+                } 
+                flag=1; // atleast one contact is found  
+                index[i] = 1; // setting the index in the index array for modification
+
+                displaycontact(&addressBook->contacts[i],i); //print along with the index
+                           
         } 
+       
     }
-    if(count!=newcount)// for multiple contacts
-    {
-        newcount=count;
-        indexarr[count-1]=i; // saving the index of the found contact as the array element
-    }
-
-    if(!flag)
-        printf("\n Entered Contact Details not found \n");
-
-        return indexarr;  // return pointer to array as we dont know whether one data or multiple data is present with same nam
-
-        
-
+    return flag; // This will tell us that if atleast one contact was matched or not  
 }
-
 void editContact(AddressBook *addressBook)
 {
 	/* Define the logic for Editcontact */
-    char newentry[50];
+
+    char newentry[50]; // To take input for data modification
+    int index[50]; // array for storing the searched result
+    int *ptr=index; // pointer for function call
     int entry,i;
     
-    char *ptr = searchContact(addressBook); // to collect the index array pointer
-    printf("Enter the index you want to edit\n");
-    scanf("%d",&i);
-    printf("\nEnter the field you want to edit, Enter (1,2,3) \n 1. Name\n 2.Phone\n 3.Email\n");
-    scanf("%d",&entry);
-    getchar();
+    int res = searchContact(addressBook,ptr); // seaching the element to edit
+
+    if(res) // to check for atleast one search result is found
+    {
+        while(1)
+        {
+            printf("Enter the index you want to edit\n");
+            scanf("%d",&i);
+            if((i > 0 && i <=addressBook->contactCount && ptr[i] == 1)) // checking if the entered index is matching the search results
+            break;
+            printf("Entered index is incorrect \n");
+        } 
+    }
+    else
+        printf("Entered data could not be found in the addressbook\n"); // if no search result is found 
+    
+    // Asking the field for edit     
+    while(1)
+    {
+        printf("\nEnter the field you want to edit, Enter (1,2,3) \n 1. Name\n 2.Phone\n 3.Email\n");
+        scanf("%d",&entry);
+        getchar();
+        
+        if((i > 0 && i <=addressBook->contactCount && index[i] == 1)) // checking if the entered index is matching the search results i.e index value is 1 in the search array
+          break;
+        printf("Entered index is incorrect \n");
+    }
+
+    // Asking user to enter the new data for modification
     printf("Enter the new data to be entered\n");
     scanf("%49[^\n]",newentry);
     switch(entry)
     {
-         case 1:
+         case 1:printf("Enter the new name to be saved\n"); // To modify the name of a contact
+                scanf("%49[^\n]",newentry);
                 strcpy(addressBook->contacts[i-1].name,newentry);
                 printf("Name updated sucessfully\n");
                 break;
          
-         case 2:
+         case 2:printf("Enter the new Phone Number to be saved\n"); // To modify the phone number of a contact
+                scanf("%49[^\n]",newentry);
                 strcpy(addressBook->contacts[i-1].phone,newentry);
                 printf("Phone updated sucessfully\n");
                 break;
          
-         case 3:
+         case 3:printf("Enter the new email to be saved\n"); // To modify the email of a contact
+                scanf("%49[^\n]",newentry);
                 strcpy(addressBook->contacts[i-1].email,newentry);
                 printf("Email updated sucessfully\n");
                 break;
-         default:
-                printf("Enter your choice as 1,2,3\n");
     }    
-
-    
 }
 
 void deleteContact(AddressBook *addressBook)
 {
-	/* Define the logic for deletecontact */
-   
+    int index[50];
+    int i;
+    
+    int res = searchContact(addressBook, index);
+
+    if(res)
+    {
+        while(1)
+        {
+            printf("Enter the index you want to delete:\n");
+            scanf("%d", &i);
+            i--;
+
+            if(i >= 0 && i < addressBook->contactCount && index[i] == 1) // Checking the index and search result
+                break;
+
+            printf("Entered index is incorrect\n");
+        }
+
+        // Deletion logic inside success block
+        for(int j = i; j < addressBook->contactCount - 1; j++)
+        {
+            addressBook->contacts[j] = addressBook->contacts[j + 1]; // shifting for overwriting
+        }
+
+        addressBook->contactCount--; // reducing the total count of contacts
+        printf("Contact deleted successfully\n");
+    }
+    else
+    {
+        printf("Entered data could not be found in the addressbook\n");
+    }
 }
+
+
+
+

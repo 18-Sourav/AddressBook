@@ -5,6 +5,7 @@ int main() {
     int choice;
     
    // int sortChoice;
+    int loc[100];
     AddressBook addressBook;
     initialize(&addressBook); // Initialize the address book
 
@@ -25,7 +26,7 @@ int main() {
                 createContact(&addressBook);
                 break;
             case 2:
-                searchContact(&addressBook);
+                searchContact(&addressBook ,loc);
                 break;
             case 3:
                 editContact(&addressBook);
