@@ -15,9 +15,9 @@ typedef struct {
     Contact contacts[100];
     int contactCount;
 } AddressBook;
-//int space[100];
+
 void createContact(AddressBook *addressBook);
-int  searchContact(AddressBook *addressBook,int *);
+int  searchContact(AddressBook *addressBook,int *space);
 void editContact(AddressBook *addressBook);
 void deleteContact(AddressBook *addressBook);
 void listContacts(AddressBook *addressBook);
