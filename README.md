@@ -3,7 +3,7 @@
 A console-based Address Book application written in C that allows users to manage contacts efficiently.
 The project demonstrates structured programming, file handling, modular design, and searching/sorting logic.
 
-🚀 Concepts Used
+`🚀 Concepts Used`
 
 1. Structures in C
 2. File Handling (fopen, fread, fwrite, fclose)
@@ -13,17 +13,17 @@ The project demonstrates structured programming, file handling, modular design, 
 6. Sorting Algorithms
 7. Menu-Driven Console Application
 
-📌 Features
+`📌 Features`
+- ✅ Create Contact   
+- 🔍 Search Contact (supports multiple matches)    
+- ✏️ Edit Contact    
+- ❌ Delete Contact    
+- 📋 List All Contacts    
+- 💾 Save Contacts to File    
+- 🚪 Exit Safely    
 
-✅ Create Contact
-🔍 Search Contact (supports multiple matches)
-✏️ Edit Contact
-❌ Delete Contact
-📋 List All Contacts
-💾 Save Contacts to File
-🚪 Exit Safely
-
-
+`📂 Project Structure`
+```
 AddressBook/
 ├── main.c          # Menu and program control
 ├── contact.h       # Structures & function declarations
@@ -31,12 +31,14 @@ AddressBook/
 ├── sorting.h       # Sorting function declarations
 ├── sorting.c       # Sorting implementations (if used)
 └── contacts.dat    # Data file (created after saving)
+```
 
-🖥️ Usage
+
+`🖥️ Usage`
 
 When you run the program, you’ll see:
 
-Address Book Menu:
+```Address Book Menu:
 1. Create contact
 2. Search contact
 3. Edit contact
@@ -45,55 +47,23 @@ Address Book Menu:
 6. Save contacts
 7. Exit
 Enter your choice:
+```
 
-🎬 Visual Demo (Console Walkthrough)
-➤ Create Contact
+`📚 Function Overview`  
+| Function                                    | Description                                    |
+| ------------------------------------------- | ---------------------------------------------  |
+| `initialize(AddressBook *ab)`               | Initializes the address book                   |
+| `createContact(AddressBook *ab)`            | Adds new contact                               |
+| `searchContact(AddressBook *ab, int loc[])` | Searches contact by name, phone number, email  |
+| `editContact(AddressBook *ab)`              | Edits existing contact                         |
+| `deleteContact(AddressBook *ab)`            | Deletes a contact                              |
+| `listContacts(AddressBook *ab)`             | Displays all contacts                          |
+| `saveContactsToFile(AddressBook *ab)`       | Saves contacts to file                         |
 
-Enter your choice: 1
-Enter Name: John Doe
-Enter Phone: 1234567890
-Enter Email: john@example.com
-Contact added successfully!
 
-➤ List Contacts
-
-Enter your choice: 5
-
-Contacts:
-1. Name: John Doe
-   Phone: 1234567890
-   Email: john@example.com
-
-➤ Search Contact
-
-Enter your choice: 2
-Enter name to search: John
-
-Search Results:
-1. John Doe
-
-Enter the index to view details: 1
-Name: John Doe
-Phone: 1234567890
-Email: john@example.com
-
-➤ Edit Contact
-
-Enter your choice: 3
-Enter name of contact to edit: John
-
-Enter new phone: 9876543210
-Enter new email: john.doe@example.com
-Contact updated successfully!
-
-➤ Delete Contact
-
-Enter your choice: 4
-Enter name of contact to delete: John
-Contact deleted successfully!
-
-➤ Save Contacts
-
-Enter your choice: 6
-Saving and Exiting...
-Contacts saved to file.
+`🔮 Future Improvements`  
+-Dynamic memory allocation (remove 100-contact limit)  
+-Case-insensitive search  
+-UI improvement with colored terminal output  
+-Password protection  
+-Binary file encryption  
