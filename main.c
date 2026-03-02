@@ -11,6 +11,7 @@ int main() {
     initialize(&addressBook); // Initialize the address book
 
     do {
+        printf("\n📱 ADDRESS BOOK MENU:📲\n");
         printf("\nAddress Book Menu:\n");
         printf("1. Create contact\n");
         printf("2. Search contact\n");

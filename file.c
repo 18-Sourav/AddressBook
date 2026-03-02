@@ -40,7 +40,8 @@ void loadContactsFromFile(AddressBook *addressBook)
         if (sscanf(line, "%49[^,],%19[^,],%49[^\n]",
                    addressBook->contacts[addressBook->contactCount].name,
                    addressBook->contacts[addressBook->contactCount].phone,
-                   addressBook->contacts[addressBook->contactCount].email) == 3)
+                   addressBook->contacts[addressBook->contactCount].email) == 3) // skips any corrupted line in the file while reading and moves to the next line
+                                                                                // And whilw we again save the data to file the data would be perfectly ordered and without any blanks
         {
             addressBook->contactCount++;
         }
